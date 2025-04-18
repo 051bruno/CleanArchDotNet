@@ -25,7 +25,9 @@ public class AuthService
         if (user == null || user.Password != password) return null;
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_config["Jwt:Key"]);
+
+        var jwtKey = _config.GetSection("Jwt")["Key"] ?? throw new InvalidOperationException("JWT key not found");
+        var key = Encoding.ASCII.GetBytes(jwtKey);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

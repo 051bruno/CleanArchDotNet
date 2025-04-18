@@ -1,26 +1,33 @@
-# CleanArchDotNet
+CleanArchDotNet
+Projeto completo em .NET 8 seguindo os principais princípios e boas práticas de desenvolvimento backend profissional.
 
-Projeto completo em .NET 7 seguindo os principais princípios e boas práticas de desenvolvimento backend profissional.
+✅ Tecnologias e Princípios Utilizados
+.NET 8
 
-## ✅ Tecnologias e Princípios Utilizados
+Entity Framework Core (SQLite)
 
-- **.NET 7**
-- **Entity Framework Core (SQLite)**
-- **Autenticação com JWT**
-- **Swagger**
-- **Clean Architecture**
-- **DDD (Domain-Driven Design)**
-- **Princípios SOLID**
-- **TDD (Test-Driven Development) com xUnit e Moq**
-- **Injeção de Dependência (DI)**
-- **Middlewares customizados**
-- **Docker e Docker Compose**
+Autenticação com JWT
 
----
+Swagger
 
-## 📁 Estrutura do Projeto
+Clean Architecture
 
-```
+DDD (Domain-Driven Design)
+
+Princípios SOLID
+
+TDD (Test-Driven Development) com xUnit e Moq
+
+Injeção de Dependência (DI)
+
+Middlewares customizados
+
+Docker e Docker Compose
+
+📁 Estrutura do Projeto
+bash
+Copiar
+Editar
 CleanArchDotNet/
 │
 ├── src/
@@ -31,91 +38,93 @@ CleanArchDotNet/
 │
 ├── tests/               # Testes de unidade
 └── docker-compose.yml
-```
+▶️ Como executar o projeto
+Requisitos
+.NET 8 SDK
 
----
+Docker (opcional)
 
-## ▶️ Como executar o projeto
+Passos
+Restaure as dependências do projeto:
 
-### Requisitos
-- [.NET 7 SDK](https://dotnet.microsoft.com/en-us/download)
-- Docker (opcional)
-
-### Passos
-
-```bash
+bash
+Copiar
+Editar
 cd src/API
 dotnet restore
+Atualize o banco de dados com as migrations:
+
+bash
+Copiar
+Editar
 dotnet ef database update
+Execute o projeto:
+
+bash
+Copiar
+Editar
 dotnet run
-```
+Acesse o Swagger em: https://localhost:5001/swagger
 
-Acesse o Swagger em: `https://localhost:5001/swagger`
+🐳 Rodando com Docker
+Caso queira rodar o projeto com Docker, utilize o seguinte comando:
 
----
-
-## 🐳 Rodando com Docker
-
-```bash
+bash
+Copiar
+Editar
 docker-compose up --build
-```
+A API será exposta em https://localhost:5001 (ou http://localhost:5000).
 
-A API será exposta em `https://localhost:5001` (ou `http://localhost:5000`)
-
----
-
-## 🔐 Autenticação JWT
-
-### Endpoint de Login
-
-```
+🔐 Autenticação JWT
+Endpoint de Login
+http
+Copiar
+Editar
 POST /auth/login
-```
+Body (JSON):
 
-```json
+json
+Copiar
+Editar
 {
   "username": "admin",
   "password": "admin123"
 }
-```
+Uso do Token
+Inclua o token no header Authorization com o formato:
 
-### Uso do Token
-Inclua o token no header `Authorization` com o formato:
-
-```
+http
+Copiar
+Editar
 Bearer {token}
-```
+🧪 Executar Testes
+Para executar os testes de unidade, execute o comando abaixo:
 
----
-
-## 🧪 Executar Testes
-
-```bash
+bash
+Copiar
+Editar
 cd tests
 dotnet test
-```
+🧱 Conceitos e Padrões Abordados
+Responsabilidade única e separação de camadas
 
----
+Repositórios desacoplados com interfaces
 
-## 🧱 Conceitos e padrões abordados
+Casos de uso organizados
 
-- **Responsabilidade única e separação de camadas**
-- **Repositórios desacoplados com interfaces**
-- **Casos de uso organizados**
-- **Middlewares customizados para logging e autenticação**
-- **Validações e serviços bem definidos**
-- **Autenticação e autorização com JWT**
-- **Testes unitários para regras de negócio e controllers**
+Middlewares customizados para logging e autenticação
 
----
+Validações e serviços bem definidos
 
-## 👨‍💻 Autor
+Autenticação e autorização com JWT
 
-Bruno — projeto de estudo com aplicação prática de Clean Architecture em .NET  
-LinkedIn: [linkedin.com/in/051bruno](https://linkedin.com/in/051bruno)
+Testes unitários para regras de negócio e controllers
 
----
+Injeção de dependência (DI) para desacoplamento de serviços
 
-## 📄 Licença
+👨‍💻 Autor
+Bruno — Projeto de estudo com aplicação prática de Clean Architecture em .NET
+LinkedIn: linkedin.com/in/051bruno
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
+📄 Licença
+Este projeto está licenciado sob a MIT License.

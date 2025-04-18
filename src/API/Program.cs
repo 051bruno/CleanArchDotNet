@@ -1,48 +1,61 @@
-using Application.Services;
-using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Application.Services;
+using Core.Interfaces;
+using API.Middleware; // Middleware de logging
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite("Data Source=app.db"));
+// 1. Configurar EF Core (SQLite)
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// 2. Injeção de dependência das camadas
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<AuthService>();
+
+// 3. Controllers
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication(opt =>
+// 4. Configurar JWT
+var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT key is not configured.");
+var key = Encoding.ASCII.GetBytes(jwtKey);
+
+builder.Services.AddAuthentication(options =>
 {
-    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme  = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme     = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(opt =>
+.AddJwtBearer(options =>
 {
-    var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-    opt.TokenValidationParameters = new TokenValidationParameters
+    options.RequireHttpsMetadata      = false;
+    options.SaveToken                 = true;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        ValidateIssuerSigningKey     = true,
+        IssuerSigningKey             = new SymmetricSecurityKey(key),
+        ValidateIssuer               = false,
+        ValidateAudience             = false,
+        ValidateLifetime             = true
     };
 });
 
+// 5. Swagger com suporte a Bearer
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "CleanArchDotNet API", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        In = ParameterLocation.Header,
-        Description = "JWT Authorization header usando o esquema Bearer."
+        Description = "JWT Authorization header usando o esquema Bearer. Ex: \"Bearer {token}\"",
+        Name        = "Authorization",
+        In          = ParameterLocation.Header,
+        Type        = SecuritySchemeType.ApiKey,
+        Scheme      = "Bearer"
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -50,19 +63,45 @@ builder.Services.AddSwaggerGen(c =>
             new OpenApiSecurityScheme {
                 Reference = new OpenApiReference {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Id   = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+// 6. Aplicar migrations e seed inicial
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+
+    // seed de usuário admin, por exemplo
+    if (!db.Users.Any())
+    {
+        db.Users.Add(new Core.Entities.User("admin", "admin123"));
+        db.SaveChanges();
+    }
+}
+
+// 7. Middleware pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CleanArchDotNet v1"));
+}
+
+app.UseHttpsRedirection();
+
+// opcional: middleware de logging
+app.UseMiddleware<LoggingMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();
