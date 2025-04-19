@@ -1,11 +1,11 @@
 
 # CleanArchDotNet
 
-Projeto completo em .NET 7 seguindo os principais princípios e boas práticas de desenvolvimento backend profissional.
+Projeto completo em .NET 8 seguindo os principais princípios e boas práticas de desenvolvimento backend profissional.
 
 ## ✅ Tecnologias e Princípios Utilizados
 
-- **.NET 7**
+- **.NET 8**
 - **Entity Framework Core (SQLite)**
 - **Autenticação com JWT**
 - **Swagger**
