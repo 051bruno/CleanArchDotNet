@@ -55,3 +55,12 @@ docker-compose.override.yml
 *.tmp
 *.old
 *.orig
+
+
+# Arquivos e pastas de configuração do Visual Studio
+.vs/
+
+# Arquivos de banco SQLite (gerados localmente)
+*.db
+*.db-shm
+*.db-wal

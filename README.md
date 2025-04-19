@@ -19,6 +19,11 @@ Projeto completo em .NET 7 seguindo os principais princípios e boas práticas d
 
 ---
 
+### 🔐 Atenção
+Este projeto é **apenas para fins de estudo**. As chaves de autenticação estão visíveis apenas para facilitar testes e aprendizado. Em produção, essas informações devem ser protegidas com `dotnet user-secrets`, variáveis de ambiente, ou outros mecanismos seguros.
+
+
+
 ## 📁 Estrutura do Projeto
 
 ```
@@ -33,6 +38,8 @@ CleanArchDotNet/
 ├── tests/               # Testes de unidade
 └── docker-compose.yml
 ```
+
+
 
 ---
 
